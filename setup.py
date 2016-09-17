@@ -8,5 +8,5 @@ setup(
     license='MIT License',
     author='Alfredo De la Fuente',
     author_email='alfredo.delafuente.b@gmail.com',
-    description=''
+    description='A python implemented comparison between Markov Chain and LSTM text generation models.'
 )
