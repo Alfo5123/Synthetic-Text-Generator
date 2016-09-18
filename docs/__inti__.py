@@ -10,8 +10,6 @@ textfile = open('/home/alfredo/Escritorio/borges_collected-fictions.txt')
 
 ## Apply Markov Chain Text Generator
 markov = markovgen.MarkovGenerator( textfile , 3 , 25 )
+
+#Print Results
 print(markov.generate_markov_text())
-
-
-
-
