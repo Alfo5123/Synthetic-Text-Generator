@@ -6,10 +6,10 @@ Markov Text Generator vs LSTM Model
 import markovgen
 
 # Load data
-textfile = open('/home/alfredo/PycharmProjects/Synthetic-Text-Generator/docs/borges_collected-fictions.txt')
+textfile = open('/home/alfredo/Escritorio/borges_collected-fictions.txt')
 
 ## Apply Markov Chain Text Generator
-markov = markovgen.MarkovGenerator( textfile , 3 , 10 )
+markov = markovgen.MarkovGenerator( textfile , 3 , 25 )
 print(markov.generate_markov_text())
 f = open('workfile.txt', 'w+')
 f.write(markov.cache.__str__())
