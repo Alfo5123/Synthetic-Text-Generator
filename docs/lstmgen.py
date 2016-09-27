@@ -30,8 +30,8 @@ class LSTMGenerator(object):
        self.X , self.Y = self.get_training_data(self.seq_length)
 
        # Training model
-       if ~os.path.isfile('Trained_LSTM.hdf5') :
-        self.train_lstm(self.X , self.Y )
+      # if ~os.path.isfile('Trained_LSTM.hdf5') :
+        #self.train_lstm(self.X , self.Y )
 
 
     def file_to_characters(self):
@@ -69,7 +69,7 @@ class LSTMGenerator(object):
             dataX.append([self.char_to_int[char] for char in seq_in])
             dataY.append(self.char_to_int[seq_out])
         n_patterns = len(dataX)
-        print n_patterns
+
         # Reshape X to be [samples, time steps, features]
         X = numpy.reshape(dataX, (n_patterns, seq_length, 1))
         # Normalize
@@ -87,7 +87,7 @@ class LSTMGenerator(object):
 
         # Define the model
         model = Sequential()
-        model.add(LSTM(256, input_shape=(X.shape[1], X.shape[2])))
+        model.add(LSTM(128, input_shape=(X.shape[1], X.shape[2])))
         model.add(Dropout(0.2))
         model.add(Dense(Y.shape[1], activation='softmax'))
         model.compile(loss='categorical_crossentropy', optimizer='adam')
@@ -104,12 +104,20 @@ class LSTMGenerator(object):
 
         # Define the model
         model = Sequential()
-        model.add(LSTM(256, input_shape=(self.X.shape[1], self.X.shape[2])))
+        model.add(LSTM(128, input_shape=(self.X.shape[1], self.X.shape[2])))
         model.add(Dropout(0.2))
         model.add(Dense(self.Y.shape[1], activation='softmax'))
         filename = "Trained_LSTM.hdf5"
         model.load_weights(filename)
         model.compile(loss='categorical_crossentropy', optimizer='adam')
+
+        # Define CheckPoint
+        filepath = "Trained_LSTM.hdf5"
+        checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
+        callbacks_list = [checkpoint]
+
+        # Fit the model
+        model.fit(self.X, self.Y, nb_epoch=1, batch_size=128, callbacks=callbacks_list)
 
         # Start at random point in text
         start = numpy.random.randint(0, self.input_size - 1)
