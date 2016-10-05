@@ -1,11 +1,16 @@
 import random
 
 class MarkovGenerator(object):
-    def __init__(self, open_file,order, size):
+    ''''
+    Markov Text Generator Model
+    '''
+    def __init__(self, input_file,order, size):
+
         self.cache = {}
-        self.open_file = open_file
+        self.input_file = input_file
         self.order = order
         self.size = size
+
         self.words = self.file_to_words()
         self.word_size = len(self.words)
         self.build_dictionary()
@@ -14,8 +19,8 @@ class MarkovGenerator(object):
         """
             Split the whole text in words
         """
-        self.open_file.seek(0)
-        data = self.open_file.read()
+        self.input_file.seek(0)
+        data = self.input_file.read()
         words = data.split()
         return words
 
@@ -57,4 +62,5 @@ class MarkovGenerator(object):
             curr_words.append( random.choice(self.cache[tuple(curr_words)] ) )
             curr_words = curr_words[1:]
         gen_words.append(curr_words[self.order-2])
-        return "' ..." + ' '.join(gen_words) + "... ' "
+        print ( "Markov Chain Text Generator Example:\n " +
+                "'..." + ' '.join(gen_words) + "... ' \n" )
