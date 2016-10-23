@@ -1,4 +1,5 @@
-import numpy
+import numpy as np
+import scipy
 import os
 from keras.models import Sequential
 from keras.layers import Dense
@@ -6,6 +7,7 @@ from keras.layers import Dropout
 from keras.layers import LSTM
 from keras.callbacks import ModelCheckpoint
 from keras.utils import np_utils
+from scipy.stats import rv_discrete
 
 class LSTMGenerator(object):
     ''''
@@ -71,7 +73,7 @@ class LSTMGenerator(object):
         n_patterns = len(dataX)
 
         # Reshape X to be [samples, time steps, features]
-        X = numpy.reshape(dataX, (n_patterns, seq_length, 1))
+        X = np.reshape(dataX, (n_patterns, seq_length, 1))
         # Normalize
         X = X / float(self.vocabulary_size)
         # One hot encode the output variable
@@ -111,30 +113,27 @@ class LSTMGenerator(object):
         model.load_weights(filename)
         model.compile(loss='categorical_crossentropy', optimizer='adam')
 
-        # Define CheckPoint
-        filepath = "Trained_LSTM.hdf5"
-        checkpoint = ModelCheckpoint(filepath, monitor='loss', verbose=1, save_best_only=True, mode='min')
-        callbacks_list = [checkpoint]
-
-        # Fit the model
-        model.fit(self.X, self.Y, nb_epoch=1, batch_size=128, callbacks=callbacks_list)
-
         # Start at random point in text
-        start = numpy.random.randint(0, self.input_size - 1)
+        start = np.random.randint(0, self.input_size - 1)
         seed = self.characters[start:start + self.seq_length]
         pattern = [self.char_to_int[char] for char in seed ]
         output_text = seed
 
         # Generate characters
+
         for i in range(self.output_size):
-            x = numpy.reshape(pattern, (1, len(pattern), 1))
+            x = np.reshape(pattern, (1, len(pattern), 1))
             x = x / float(self.vocabulary_size)
             prediction = model.predict(x, verbose=0)
-            index = numpy.argmax(prediction)
+            prob = prediction.transpose()
+            #index = np.argmax(prediction)
+            index = rv_discrete(values=(range(len(prob)), list(prob))).rvs(size=1)[0]
             result = self.int_to_char[index]
             output_text.append(result)
             pattern.append(index)
             pattern = pattern[1:len(pattern)]
 
         print "LSTM Text Generator Example:\n \t'..." + ''.join(output_text) + "...'"
+
+
 
