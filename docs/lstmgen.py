@@ -126,7 +126,6 @@ class LSTMGenerator(object):
             x = x / float(self.vocabulary_size)
             prediction = model.predict(x, verbose=0)
             prob = prediction.transpose()
-            #index = np.argmax(prediction)
             index = rv_discrete(values=(range(len(prob)), list(prob))).rvs(size=1)[0]
             result = self.int_to_char[index]
             output_text.append(result)
@@ -134,6 +133,5 @@ class LSTMGenerator(object):
             pattern = pattern[1:len(pattern)]
 
         print "LSTM Text Generator Example:\n \t'..." + ''.join(output_text) + "...'"
-
 
 
